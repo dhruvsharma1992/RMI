@@ -1,6 +1,8 @@
 package rmi;
 
+import java.lang.reflect.Method;
 import java.net.*;
+import java.util.Arrays;
 
 /** RMI skeleton
 
@@ -26,10 +28,20 @@ import java.net.*;
 */
 public class Skeleton<T>
 {
+    private Class<T> serverclass = null;
+    private T server = null;
+
+    private volatile boolean isRunning = false;
+
+    private int port = 0;
+    private String hostName = null;
+
+    private ServerSocket listen_socket;
+
+
     /** Creates a <code>Skeleton</code> with no initial server address. The
         address will be determined by the system when <code>start</code> is
         called. Equivalent to using <code>Skeleton(null)</code>.
-
         <p>
         This constructor is for skeletons that will not be used for
         bootstrapping RMI - those that therefore do not require a well-known
@@ -47,7 +59,20 @@ public class Skeleton<T>
      */
     public Skeleton(Class<T> c, T server)
     {
-        throw new UnsupportedOperationException("not implemented");
+        if (c == null || server == null) {
+            throw new NullPointerException();
+        }
+
+        if (!c.isInterface()){
+        	throw new Error("In constructor with 2 arguments (Skeleton(Class<T> c, T server)) : Class cannot be passed!");
+        }
+        		
+        if(!CheckRMIException(c)) {
+            throw new Error("The Input Class is not a Remote Interface in the 2 argument Constructor");
+        }
+
+        this.serverclass = c;
+        this.server = server;
     }
 
     /** Creates a <code>Skeleton</code> with the given initial server address.
@@ -70,8 +95,26 @@ public class Skeleton<T>
      */
     public Skeleton(Class<T> c, T server, InetSocketAddress address)
     {
-        throw new UnsupportedOperationException("not implemented");
+        if (c == null || server == null) {
+            throw new NullPointerException();
+        }
+        
+        if (!c.isInterface()){
+        	throw new Error("In constructor with 3 arguments (Skeleton(Class<T> c, T server)) : Class cannot be passed!");
+        }
+        		
+        if(!CheckRMIException(c)) {
+            throw new Error("The Input Class is not a Remote Interface in the 3 argument Constructor");
+        }
+
+        this.serverclass = c;
+        this.server = server;
+        if(address != null) {
+            this.port = address.getPort();
+            this.hostName = address.getHostName();
+        }
     }
+
 
     /** Called when the listening thread exits.
 
@@ -141,7 +184,28 @@ public class Skeleton<T>
      */
     public synchronized void start() throws RMIException
     {
-        throw new UnsupportedOperationException("not implemented");
+        if (this.isRunning == false) {
+            this.setRunningStatus(true);
+            try {
+                listen_socket = new ServerSocket(this.port);
+                this.port = listen_socket.getLocalPort();
+
+                if (this.hostName == null) {
+                    this.hostName = listen_socket.getInetAddress().getHostName();
+                }
+
+               
+            }
+            catch (Throwable e) {
+                System.out.println("Error " + e.getMessage());
+                e.printStackTrace();
+            }
+
+        }
+        else {
+            throw new RMIException("Server already started!");
+        }
+
     }
 
     /** Stops the skeleton server, if it is already running.
@@ -155,6 +219,48 @@ public class Skeleton<T>
      */
     public synchronized void stop()
     {
-        throw new UnsupportedOperationException("not implemented");
+        try {
+            this.setRunningStatus(false);
+            listen_socket.close();
+        }
+        catch (Throwable e) {
+            System.out.println("Error " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public Class<T> getServerClass (){
+        return this.serverclass;
+    }
+
+    public T getServer (){
+        return this.server;
+    }
+
+    public String getHostName() {
+		    return hostName;
+	  }
+
+    public int getPort() {
+		    return port;
+    }
+
+    public synchronized boolean getRunningStatus() {
+        return isRunning;
+    }
+
+    public synchronized void setRunningStatus(boolean rs) {
+        isRunning = rs;
+    }
+
+    private static boolean CheckRMIException(Class<?> c){
+        Method[] methods = c.getMethods();
+        for (Method method : methods) {
+            Class<?>[] exceptions = method.getExceptionTypes();
+            if (!Arrays.asList(exceptions).contains(RMIException.class)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
