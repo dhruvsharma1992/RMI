@@ -1,6 +1,9 @@
 package rmi;
 
-import java.net.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 /** RMI stub factory.
 
@@ -45,10 +48,24 @@ public abstract class Stub
                       <code>RMIException</code>, or if an object implementing
                       this interface cannot be dynamically created.
      */
-    public static <T> T create(Class<T> c, Skeleton<T> skeleton)
-        throws UnknownHostException
-    {
-        throw new UnsupportedOperationException("not implemented");
+    public static <T> T create(Class<T> c, Skeleton<T> skeleton)    throws Throwable  {
+    	if(c == null || skeleton == null)
+    		throw new NullPointerException(); 
+    	
+    	try{
+    		InvocationHandler handler = new RmiInvocationHandler(skeleton.address);
+    		@SuppressWarnings("unchecked")
+    		T stub = (T) Proxy.newProxyInstance(c.getClassLoader(),
+                    new Class[] { c},
+                    handler);
+        	return stub;
+    	} catch(IllegalStateException e){
+    		throw e;
+    	} catch(UnknownHostException e){
+    		throw e;
+    	}
+    	
+    	
     }
 
     /** Creates a stub, given a skeleton with an assigned address and a hostname
