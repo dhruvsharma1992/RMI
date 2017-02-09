@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.net.*;
 import java.util.Arrays;
 
+
 /** RMI skeleton
 
     <p>
@@ -193,7 +194,8 @@ public class Skeleton<T>
                 if (this.hostName == null) {
                     this.hostName = listen_socket.getInetAddress().getHostName();
                 }
-
+                listenerThread<T> listen_thread = new listenerThread<>(this, listen_socket, serverclass);
+                listen_thread.start();
                
             }
             catch (Throwable e) {
