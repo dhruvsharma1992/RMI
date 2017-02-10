@@ -54,7 +54,7 @@ public class RmiInvocationHandler<T> implements InvocationHandler, Serializable{
 			ObjectOutputStream outToServer = new ObjectOutputStream(s.getOutputStream());
 			outToServer.flush();
 	        ObjectInputStream inFromServer = new ObjectInputStream(s.getInputStream());
-	        Message msg = new Message(method,args);
+	        Message msg = new Message(className,method,args);
 	        
 	        outToServer.writeObject(msg);
 	        Object returned = null;

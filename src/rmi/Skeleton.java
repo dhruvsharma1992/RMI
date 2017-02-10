@@ -333,10 +333,15 @@ public class Skeleton<T> {
                 Message msg = (Message) in.readObject();
                 String methodName = msg.getMethodName();
                 Class<?>[] parameterTypes = msg.getParameterTypes();
+                Class<?> interfaceClassImpl = msg.implementedClass;
                 
                 Object[] args = msg.getArgs();
 
                 Method method;
+                
+                if(!interfaceClassImpl.isAssignableFrom(interfaceClass))
+                	throw new RMIException(  "Illegal ");
+                
                 method = interfaceClass.getMethod(methodName, parameterTypes);
                 Class<?> returnType = msg.getReturnType();
                 Object result = null;
