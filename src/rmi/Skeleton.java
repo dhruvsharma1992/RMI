@@ -338,7 +338,7 @@ public class Skeleton<T> {
                 Object[] args = msg.getArgs();
 
                 Method method;
-                System.out.println("\n"+interfaceClassImpl.getName() + " "+ interfaceClass.getName()+" "+interfaceClassImpl.isAssignableFrom(interfaceClass));
+//                System.out.println("\n"+interfaceClassImpl.getName() + " "+ interfaceClass.getName()+" "+interfaceClassImpl.isAssignableFrom(interfaceClass));
                 if(!interfaceClassImpl.isAssignableFrom(interfaceClass))
                 	throw new RMIException(  "Illegal ");
                 
