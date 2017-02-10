@@ -43,7 +43,7 @@ public class RmiInvocationHandler<T> implements InvocationHandler, Serializable{
                 return false;
                 // alternately can match tostrings of both
             }
-	        if(method.getName().equals("hashCode"))
+	        if(method.equals(Object.class.getMethod("hashCode")))
 	        	return className.hashCode()*hostname.hashCode()*port;
 	        
 	        if (method.equals(Object.class.getMethod("toString"))) {
