@@ -66,7 +66,7 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 	        }
 			
 		}catch(Exception e){
-			throw e;
+			throw new RMIException(e.getMessage());
 		}
 	}
 	
