@@ -75,7 +75,7 @@ public abstract class Stub
                       <code>RMIException</code>, or if an object implementing
                       this interface cannot be dynamically created.
      */
-    public static <T> T create(Class<T> c, Skeleton<T> skeleton)    throws Throwable  {
+    public static <T> T create(Class<T> c, Skeleton<T> skeleton)    {
     	if(c==null || skeleton == null)
     		throw new NullPointerException();
     	
@@ -129,7 +129,7 @@ public abstract class Stub
                       this interface cannot be dynamically created.
      */
     public static <T> T create(Class<T> c, Skeleton<T> skeleton,
-                               String hostname) throws Throwable
+                               String hostname) 
     {
     	if(c==null || skeleton == null || hostname == null)
     		throw new NullPointerException();
@@ -174,7 +174,7 @@ public abstract class Stub
                       <code>RMIException</code>, or if an object implementing
                       this interface cannot be dynamically created.
      */
-    public static <T> T create(Class<T> c, InetSocketAddress address)  throws Throwable
+    public static <T> T create(Class<T> c, InetSocketAddress address) 
     {
     	if(c==null || address == null)
     		throw new NullPointerException();
