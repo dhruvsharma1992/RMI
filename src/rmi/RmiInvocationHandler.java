@@ -76,8 +76,10 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 			
 		}catch(Exception e){
 			 if (Arrays.asList(method.getExceptionTypes()).contains(e.getClass())){
+				 System.out.println("e");
                  throw e;
              }
+			 System.out.println("rmi");
              throw new RMIException(e);
 //			throw new RMIException(e.getMessage());
 		}
