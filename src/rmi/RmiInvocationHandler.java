@@ -15,22 +15,30 @@ import java.lang.IllegalStateException;
 
 public class RmiInvocationHandler implements InvocationHandler{
 
-	InetSocketAddress address ;
+//	InetSocketAddress address ;
+	
+	String hostname;
+	int port;
+	
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable{
 		Socket s;
 		try{
-			if(address.getAddress() == null)
-				s = new Socket(address.getHostName(), address.getPort());
-			else
-				s = new Socket(address.getAddress(), address.getPort());
-			
+			s = new Socket(hostname, port);
+			System.out.println("hi");
 			ObjectOutputStream outToServer = new ObjectOutputStream(s.getOutputStream());
+			outToServer.flush();
 	        ObjectInputStream inFromServer = new ObjectInputStream(s.getInputStream());
-	        Message msg = new Message(method, args);
+	        Message msg = new Message(method, method.getParameterTypes(),args);
 	        
-	        outToServer.writeObject(msg);
+	        outToServer.writeObject(method.getName());
+	        outToServer.writeObject(method.getParameterTypes());
+	        outToServer.writeObject(method.getReturnType());
+	        outToServer.writeObject(args);
+	        System.out.println("out");
 	        Object returned = inFromServer.readObject();
+	        System.out.println("returned " +returned);
+	        s.close();
 	        return returned;	        
 			
 		}catch(Exception e){
@@ -38,11 +46,11 @@ public class RmiInvocationHandler implements InvocationHandler{
 		}
 	}
 	
-	public RmiInvocationHandler(InetSocketAddress address) throws UnknownHostException {
-		this.address = address;
-		if(address == null || address.getPort() == 0 || (address.getAddress() == null && address.getHostName() == null ))
-			throw new IllegalStateException(); 
-		throw new UnknownHostException();
+	public RmiInvocationHandler(String hostname, int port)  {
+		this.hostname = hostname;
+		this.port = port;
+		
+//		throw new UnknownHostException();
 		
 	}
 	
