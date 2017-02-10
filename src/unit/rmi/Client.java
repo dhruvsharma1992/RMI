@@ -19,6 +19,7 @@ public class Client {
 			System.out.println(stub.triple(3).num);
 			System.out.println(stub.triple(new Number(5)));
 			System.out.println(stub.equals(null));
+			System.out.println(stub.hashCode());
 //			System.out.println(server.triple(3));
 //			System.out.println(server.triple(3));
 //			System.out.println(server.triple(3));
