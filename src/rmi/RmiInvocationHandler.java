@@ -3,6 +3,7 @@ package rmi;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -52,9 +53,12 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 	        
 	        outToServer.writeObject(msg);
 	        Object returned = null;
-	        if (!method.getReturnType().equals(Void.TYPE)) {
+//	        if (!method.getReturnType().equals(Void.TYPE)) {
+	        try
+	        {
 	        	returned = inFromServer.readObject();
-	        }
+	        }catch(EOFException e){}
+//	        }
 	        
 	        
 	        if(returned instanceof Exception){

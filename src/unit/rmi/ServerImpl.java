@@ -13,6 +13,12 @@ public class ServerImpl implements Server {
 		// TODO Auto-generated method stub
 		return x.num*3;
 	}
+
+	@Override
+	public void exception() throws NullPointerException {
+		throw new NullPointerException("jandjkansdada");
+		
+	}
 	
 
 }
