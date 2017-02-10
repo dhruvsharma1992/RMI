@@ -40,7 +40,7 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
                 // alternately can match tostrings of both
             }
 	        if(method.getName().equals("hashCode"))
-	        	return Objects.hashCode(proxy);
+	        	return className.hashCode()*hostname.hashCode()*port;
 	        
 	        if (method.equals(Object.class.getMethod("toString"))) {
                 return className.getCanonicalName() + " " + hostname + " " + port;
