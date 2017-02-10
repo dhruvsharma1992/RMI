@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Objects;
 import java.lang.IllegalStateException;
 
 public class RmiInvocationHandler implements InvocationHandler{
@@ -29,6 +30,12 @@ public class RmiInvocationHandler implements InvocationHandler{
 			outToServer.flush();
 	        ObjectInputStream inFromServer = new ObjectInputStream(s.getInputStream());
 	        Message msg = new Message(method,args);
+	        if(method.getName().equals("equals")){
+	        	return (proxy == args[0]);
+	        }
+	        if(method.getName().equals("hashCode"))
+	        	return Objects.hash(proxy);
+	        	
 	        
 	        outToServer.writeObject(msg);
 //	        outToServer.writeObject(method.getParameterTypes());
