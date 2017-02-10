@@ -35,7 +35,7 @@ public abstract class Stub
 	
 	private static <T> T _create(Class<T> c, String hostname, int port) {
 		try{
-    		InvocationHandler handler = new RmiInvocationHandler(hostname,port);
+    		InvocationHandler handler = new RmiInvocationHandler(c,hostname,port);
     		@SuppressWarnings("unchecked")
     		T stub = (T) Proxy.newProxyInstance(c.getClassLoader(),
                     new Class[] { c},

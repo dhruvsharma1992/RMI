@@ -17,7 +17,7 @@ import java.lang.IllegalStateException;
 public class RmiInvocationHandler implements InvocationHandler{
 
 //	InetSocketAddress address ;
-	
+	Class<?> className;
 	String hostname;
 	int port;
 	
@@ -31,10 +31,10 @@ public class RmiInvocationHandler implements InvocationHandler{
 	        ObjectInputStream inFromServer = new ObjectInputStream(s.getInputStream());
 	        Message msg = new Message(method,args);
 	        if(method.getName().equals("equals")){
-	        	return (proxy == args[0]);
+	        	return ( this.className == args[0].getClass());
 	        }
 	        if(method.getName().equals("hashCode"))
-	        	return Objects.hash(proxy);
+	        	return Objects.hashCode(proxy);
 	        	
 	        
 	        outToServer.writeObject(msg);
@@ -57,7 +57,8 @@ public class RmiInvocationHandler implements InvocationHandler{
 		}
 	}
 	
-	public RmiInvocationHandler(String hostname, int port)  {
+	public RmiInvocationHandler(Class<?> c,String hostname, int port)  {
+		this.className = c;
 		this.hostname = hostname;
 		this.port = port;
 		
