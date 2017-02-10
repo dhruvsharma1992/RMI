@@ -25,21 +25,25 @@ public class RmiInvocationHandler implements InvocationHandler{
 		Socket s;
 		try{
 			s = new Socket(hostname, port);
-			System.out.println("hi");
 			ObjectOutputStream outToServer = new ObjectOutputStream(s.getOutputStream());
 			outToServer.flush();
 	        ObjectInputStream inFromServer = new ObjectInputStream(s.getInputStream());
-	        Message msg = new Message(method, method.getParameterTypes(),args);
+	        Message msg = new Message(method,args);
 	        
-	        outToServer.writeObject(method.getName());
-	        outToServer.writeObject(method.getParameterTypes());
-	        outToServer.writeObject(method.getReturnType());
-	        outToServer.writeObject(args);
-	        System.out.println("out");
-	        Object returned = inFromServer.readObject();
-	        System.out.println("returned " +returned);
-	        s.close();
-	        return returned;	        
+	        outToServer.writeObject(msg);
+//	        outToServer.writeObject(method.getParameterTypes());
+//	        outToServer.writeObject(method.getReturnType());
+//	        outToServer.writeObject(args);
+	        SerializedObject returned = ((SerializedObject)inFromServer.readObject());
+	        if(returned.getExceptionStatus()){
+	        	s.close();
+	        	throw (Exception)returned.getObject();
+	        }
+	        else{
+	        	s.close();
+	        	return returned.getObject(); 
+	        	
+	        }
 			
 		}catch(Exception e){
 			throw e;

@@ -1,5 +1,6 @@
 package rmi;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
@@ -22,9 +23,11 @@ public class processThread<T> extends Thread {
             ObjectOutputStream out = new ObjectOutputStream(this.connection.getOutputStream());
             out.flush();
             ObjectInputStream in = new ObjectInputStream(this.connection.getInputStream());
-            String methodName = (String) in.readObject();
-
-            Class<?>[] parameterTypes = (Class[]) in.readObject();
+            Message msg = (Message) in.readObject();
+            String methodName = msg.getMethodName();
+            Class<?>[] parameterTypes = msg.getParameterTypes();
+            Class<?> returnType = msg.getReturnType();
+            Object[] args = msg.getArgs();
 
             Method serverMethod = null;
             try {
@@ -33,11 +36,10 @@ public class processThread<T> extends Thread {
                 serverMyObject = new SerializedObject(new RMIException(e.getCause()), true);
             }
 
-            String returnType = (String) in.readObject();
 
             if (serverMethod != null) {
                 try {
-                    Object serverObject = serverMethod.invoke(this.skeleton.getServer(), (Object[])in.readObject());
+                    Object serverObject = serverMethod.invoke(this.skeleton.getServer(), args);
                     serverMyObject = new SerializedObject(serverObject, false);
                 } catch (Throwable e) {
                     serverMyObject = new SerializedObject(e.getCause(), true);
@@ -46,6 +48,12 @@ public class processThread<T> extends Thread {
             out.writeObject(serverMyObject);
             connection.close();
         } catch (Throwable e) {
+        	try {
+				connection.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
             this.skeleton.service_error(new RMIException(e.getCause()));
         }
     }

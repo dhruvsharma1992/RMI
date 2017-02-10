@@ -17,6 +17,7 @@ public class Client {
 			skeleton.start();
 			Server stub = Stub.create(Server.class, skeleton);
 			System.out.println(stub.triple(3).num);
+			System.out.println(stub.triple(new Number(5)));
 //			System.out.println(server.triple(3));
 //			System.out.println(server.triple(3));
 //			System.out.println(server.triple(3));
