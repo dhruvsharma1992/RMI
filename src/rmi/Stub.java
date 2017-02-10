@@ -82,14 +82,14 @@ public abstract class Stub
     	if(!c.isInterface())
     		throw new Error("Stubs cannot be created for classes");
     	
-    	if(skeleton.getHostName() == null || skeleton.getPort() == 0 || !skeleton.getRunningStatus())
+    	if(skeleton.getAddress() == null || skeleton.getAddress().getHostName() == null || skeleton.getAddress().getPort() == 0 )//|| !skeleton.getRunningStatus()
     		throw new IllegalStateException();
       	
     	if(!CheckRMIException(c))  		
             throw new Error("The Input Class does not represent a remote interface ");
     		
     	try{
-    		T stub = _create(c,skeleton.getHostName(),skeleton.getPort());
+    		T stub = _create(c,skeleton.getAddress().getHostName(),skeleton.getAddress().getPort());
     		return stub;
     	}catch(IllegalArgumentException e)
     	{
@@ -137,14 +137,14 @@ public abstract class Stub
     	if(!c.isInterface())
     		throw new Error("Stubs cannot be created for classes");
     	
-    	if(skeleton.getPort() == 0 || !skeleton.getRunningStatus())
+    	if(skeleton.getAddress() == null || skeleton.getAddress().getPort() == 0 )//|| !skeleton.getRunningStatus()
     		throw new IllegalStateException();
 
       	if(!CheckRMIException(c))  		
             throw new Error("The Input Class does not represent a remote interface ");
       	 
 		try{
-			T stub = _create(c, hostname, skeleton.getPort());
+			T stub = _create(c, hostname, skeleton.getAddress().getPort());
 			return stub;
 		}catch(IllegalArgumentException e)
     	{
