@@ -26,11 +26,7 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable{
 		Socket s;
 		try{
-			s = new Socket(hostname, port);
-			ObjectOutputStream outToServer = new ObjectOutputStream(s.getOutputStream());
-			outToServer.flush();
-	        ObjectInputStream inFromServer = new ObjectInputStream(s.getInputStream());
-	        Message msg = new Message(method,args);
+			
 	        if (method.equals(Object.class.getMethod("equals", Object.class))) {
                 if (args[0] instanceof Proxy) {
                 	RmiInvocationHandler handler = (RmiInvocationHandler) Proxy.getInvocationHandler((Proxy) args[0]);
@@ -45,7 +41,12 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 	        if (method.equals(Object.class.getMethod("toString"))) {
                 return className.getCanonicalName() + " " + hostname + " " + port;
             }
-	        	
+        	
+	        s = new Socket(hostname, port);
+			ObjectOutputStream outToServer = new ObjectOutputStream(s.getOutputStream());
+			outToServer.flush();
+	        ObjectInputStream inFromServer = new ObjectInputStream(s.getInputStream());
+	        Message msg = new Message(method,args);
 	        
 	        outToServer.writeObject(msg);
 //	        outToServer.writeObject(method.getParameterTypes());
