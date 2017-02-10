@@ -341,7 +341,7 @@ public class Skeleton<T> {
                 Object result = null;
                 try {
                     result = method.invoke(server, args);
-                    out.writeObject("PASSED");
+                   // out.writeObject("PASSED");
                     Class<?> returnType = msg.getReturnType();
                     if (!returnType.equals(Void.TYPE)) {
                         // if result type is void, do nothing.
@@ -357,7 +357,7 @@ public class Skeleton<T> {
                         }
                     }
                 } catch (InvocationTargetException e) {
-                    out.writeObject("FAILED");
+                   // out.writeObject("FAILED");
                     out.writeObject(e.getTargetException());
                 }
             } catch (Exception e) {
