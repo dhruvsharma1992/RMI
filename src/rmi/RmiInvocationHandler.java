@@ -7,6 +7,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -18,9 +19,13 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.lang.IllegalStateException;
 
-public class RmiInvocationHandler<T> implements InvocationHandler{
+public class RmiInvocationHandler<T> implements InvocationHandler, Serializable{
 
-//	InetSocketAddress address ;
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7948319869802020963L;
+	//	InetSocketAddress address ;
 	public Class<T> className;
 	public String hostname;
 	public int port;
