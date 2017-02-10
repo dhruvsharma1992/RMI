@@ -49,17 +49,19 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 	        Message msg = new Message(method,args);
 	        
 	        outToServer.writeObject(msg);
-//	        outToServer.writeObject(method.getParameterTypes());
-//	        outToServer.writeObject(method.getReturnType());
-//	        outToServer.writeObject(args);
-	        SerializedObject returned = ((SerializedObject)inFromServer.readObject());
-	        if(returned.getExceptionStatus()){
+	        Object returned = inFromServer.readObject();
+	        if(returned instanceof Exception){
 	        	s.close();
-	        	throw (Exception)returned.getObject();
+	        	inFromServer.close();
+	        	outToServer.close();
+	        	throw (Exception) returned;
 	        }
 	        else{
 	        	s.close();
-	        	return returned.getObject(); 
+//	        	outToServer.close();
+	        	inFromServer.close();
+	        	outToServer.close();
+	        	return returned; 
 	        	
 	        }
 			
