@@ -31,6 +31,8 @@ public class RmiInvocationHandler implements InvocationHandler{
 	        ObjectInputStream inFromServer = new ObjectInputStream(s.getInputStream());
 	        Message msg = new Message(method,args);
 	        if(method.getName().equals("equals")){
+	        	if(args[0] == null)
+	        		return false;
 	        	return ( this.className == args[0].getClass());
 	        }
 	        if(method.getName().equals("hashCode"))
