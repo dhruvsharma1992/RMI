@@ -36,7 +36,7 @@ public class ReturnTest extends BasicTestBase<ReturnTest.ReturnTestInterface>
         }
 
         if(!expected_object.equals(object_result)){
-        	System.out.println("EXPECTED **********" + object_result);
+//        	System.out.println("EXPECTED **********" + object_result);
             throw new TestFailed("remote method returned incorrect object");
         }
 
@@ -69,7 +69,6 @@ public class ReturnTest extends BasicTestBase<ReturnTest.ReturnTestInterface>
         {
             throw new TestFailed("remote method call threw an exception", t);
         }
-
         if(!expected_object.equals(object_result))
             throw new TestFailed("remote method returned incorrect object");
 
@@ -105,13 +104,14 @@ public class ReturnTest extends BasicTestBase<ReturnTest.ReturnTestInterface>
         @Override
         public String testObjectReturn() throws TestException
         {
-        	System.out.println("Excepted return " + expected_object);
+//        	System.out.println("Excepted return " + expected_object);
             return (String)expected_object;
         }
 
         @Override
         public Throwable testExceptionReturn() throws TestException
         {
+        		
             return (Throwable)expected_object;
         }
 

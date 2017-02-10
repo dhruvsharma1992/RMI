@@ -338,18 +338,18 @@ public class Skeleton<T> {
 
                 Method method;
                 method = interfaceClass.getMethod(methodName, parameterTypes);
+                Class<?> returnType = msg.getReturnType();
                 Object result = null;
 //                try {
                 	try{
                 		result = method.invoke(server, args);
+                        out.writeObject("RETURN");
                 	}catch (InvocationTargetException e) {
-                        out.writeObject("EXCEPTION");
-                        out.writeObject(e.getTargetException());
-                    }catch(Exception ex){
-                		result = ex;
-                	}
-                    out.writeObject("RETURN");
-                    Class<?> returnType = msg.getReturnType();
+//                       
+                		if(!returnType.equals(Exception.class))
+                			 out.writeObject("EXCEPTION");
+                		result = e.getTargetException();
+                    }
                     if (!(result instanceof Exception) && !returnType.equals(Void.TYPE)) {
                         // if result type is void, do nothing.
                         if (!isRemoteInterface(returnType)) {
@@ -363,11 +363,12 @@ public class Skeleton<T> {
                             out.writeObject(Stub.create(returnType, rorSkeleton.getAddress()));
                         }
                     }
+                    else
+                    	out.writeObject(result);
 //                } 
             } catch (Exception e) {
                 service_error(new RMIException(e));
             } finally {
-                serviceThreads.remove(this);
                 try {
                     if (out != null) {
                         out.flush();
@@ -380,6 +381,7 @@ public class Skeleton<T> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                serviceThreads.remove(this);
             }
         }
     }
