@@ -338,47 +338,50 @@ public class Skeleton<T> {
                 Object[] args = msg.getArgs();
 
                 Method method;
-//                System.out.println("\n"+interfaceClassImpl.getName() + " "+ interfaceClass.getName()+" "+interfaceClassImpl.isAssignableFrom(interfaceClass));
-                if(!interfaceClassImpl.isAssignableFrom(interfaceClass))
-                	throw new RMIException(  "Illegal ");
-                
-                method = interfaceClass.getMethod(methodName, parameterTypes);
-                Class<?> returnType = msg.getReturnType();
-                Object result = null;
-//                try {
-                	try{
-                		result = method.invoke(server, args);
-                        out.writeObject("RETURN");
-                	}catch (InvocationTargetException e) {
-//                       
-                		if(!returnType.equals(Exception.class))
-                			 out.writeObject("EXCEPTION");
-                		result = e.getTargetException();
-                    }
-                    if (!(result instanceof Exception) && !returnType.equals(Void.TYPE)) {
-                        // if result type is void, do nothing.
-                        if (!isRemoteInterface(returnType)) {
-                            // if result type is not void, and not remote interface, serialize the return object
-                            out.writeObject(result);
-                        } else {
-                            // Object is ROR
-                            // create and start skeleton and return stub of this skeleton
-                            Skeleton rorSkeleton = new Skeleton(returnType, result);
-                            rorSkeleton.start();
-                            out.writeObject(Stub.create(returnType, rorSkeleton.getAddress()));
-                        }
-                    }
-                    else
-                    	out.writeObject(result);
-//                } 
-            } catch (Exception e) {
-                try {
+                System.out.println("\n"+interfaceClassImpl.getName() + " "+ interfaceClass.getName()+" "+interfaceClassImpl.isAssignableFrom(interfaceClass));
+                if(!interfaceClassImpl.isAssignableFrom(interfaceClass)){
                 	out.writeObject("EXCEPTION");
-					out.writeObject(new RMIException(e));
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+                	out.writeObject(new RMIException(  "Illegal "));
+                }
+                	
+                
+                else{
+                	method = interfaceClass.getMethod(methodName, parameterTypes);
+                    Class<?> returnType = msg.getReturnType();
+                    Object result = null;
+//                    try {
+                    	try{
+                    		result = method.invoke(server, args);
+                            out.writeObject("RETURN");
+                    	}catch (InvocationTargetException e) {
+//                           
+                    		if(!returnType.equals(Exception.class))
+                    			 out.writeObject("EXCEPTION");
+                    		result = e.getTargetException();
+                        }
+                        if (!(result instanceof Exception) && !returnType.equals(Void.TYPE)) {
+                            // if result type is void, do nothing.
+                            if (!isRemoteInterface(returnType)) {
+                                // if result type is not void, and not remote interface, serialize the return object
+                                out.writeObject(result);
+                            } else {
+                                // Object is ROR
+                                // create and start skeleton and return stub of this skeleton
+                                Skeleton rorSkeleton = new Skeleton(returnType, result);
+                                rorSkeleton.start();
+                                out.writeObject(Stub.create(returnType, rorSkeleton.getAddress()));
+                            }
+                        }
+                        else
+                        	out.writeObject(result);
+//                    } 
+                	
+                	
+                }
+                
+                
+            } catch (Exception e) {
+                service_error(new RMIException(e));
             } finally {
                 try {
                     if (out != null) {
