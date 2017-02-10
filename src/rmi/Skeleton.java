@@ -168,6 +168,7 @@ public class Skeleton<T>
      */
     protected void service_error(RMIException exception)
     {
+    	
     }
 
     /** Starts the skeleton server.

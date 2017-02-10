@@ -18,11 +18,13 @@ public class processThread<T> extends Thread {
     }
 
     public void run() {
+    	ObjectOutputStream out=null;
+    	ObjectInputStream in =null;
         try {
             SerializedObject serverMyObject = null;
-            ObjectOutputStream out = new ObjectOutputStream(this.connection.getOutputStream());
+            out = new ObjectOutputStream(this.connection.getOutputStream());
             out.flush();
-            ObjectInputStream in = new ObjectInputStream(this.connection.getInputStream());
+            in = new ObjectInputStream(this.connection.getInputStream());
             Message msg = (Message) in.readObject();
             String methodName = msg.getMethodName();
             Class<?>[] parameterTypes = msg.getParameterTypes();
@@ -30,31 +32,27 @@ public class processThread<T> extends Thread {
             Object[] args = msg.getArgs();
 
             Method serverMethod = null;
-            try {
-                serverMethod = sclass.getMethod(methodName, parameterTypes);
-            } catch(Exception e) {
-                serverMyObject = new SerializedObject(new RMIException(e.getCause()), true);
-            }
-
-
+            serverMethod = sclass.getMethod(methodName, parameterTypes);
             if (serverMethod != null) {
-                try {
                     Object serverObject = serverMethod.invoke(this.skeleton.getServer(), args);
-                    serverMyObject = new SerializedObject(serverObject, false);
-                } catch (Throwable e) {
-                    serverMyObject = new SerializedObject(e.getCause(), true);
-                }
-            }
-            out.writeObject(serverMyObject);
+                    out.writeObject(serverObject);
+            } 
+            in.close();
+            out.close();            
             connection.close();
         } catch (Throwable e) {
         	try {
 				connection.close();
+				if(out != null){
+					out.writeObject(e);
+	        		out.close();
+				}
+	        	if(in != null)
+	        		in.close();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-            this.skeleton.service_error(new RMIException(e.getCause()));
+            
         }
     }
 }
