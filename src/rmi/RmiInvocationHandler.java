@@ -31,12 +31,18 @@ public class RmiInvocationHandler implements InvocationHandler{
 	        ObjectInputStream inFromServer = new ObjectInputStream(s.getInputStream());
 	        Message msg = new Message(method,args);
 	        if(method.getName().equals("equals")){
+	        	
+	        	System.out.println(args[0]);
 	        	if(args[0] == null)
 	        		return false;
-	        	return ( this.className == args[0].getClass());
+	        	return ( this.className.equals(args[0].getClass()));
 	        }
 	        if(method.getName().equals("hashCode"))
 	        	return Objects.hashCode(proxy);
+	        
+	        if (method.equals(Object.class.getMethod("toString"))) {
+                return className.getCanonicalName() + " " + hostname + " " + port;
+            }
 	        	
 	        
 	        outToServer.writeObject(msg);
