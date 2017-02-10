@@ -51,14 +51,12 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 	        Message msg = new Message(method,args);
 	        
 	        outToServer.writeObject(msg);
-	        Object returned = inFromServer.readObject();
-	        
-	        if( returned == null ){
-	        	inFromServer.close();
-	        	outToServer.close();
-	        	s.close();
-	        	return returned;
+	        Object returned = null;
+	        if (!method.getReturnType().equals(Void.TYPE)) {
+	        	returned = inFromServer.readObject();
 	        }
+	        
+	        
 	        if(returned instanceof Exception){
 	        	inFromServer.close();
 	        	outToServer.close();
@@ -76,10 +74,10 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 			
 		}catch(Exception e){
 			 if (Arrays.asList(method.getExceptionTypes()).contains(e.getClass())){
-				 System.out.println("e");
+//				 System.out.println("e");
                  throw e;
              }
-			 System.out.println("rmi");
+//			 System.out.println("rmi");
              throw new RMIException(e);
 //			throw new RMIException(e.getMessage());
 		}
