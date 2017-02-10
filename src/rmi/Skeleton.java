@@ -338,7 +338,7 @@ public class Skeleton<T> {
                 Object[] args = msg.getArgs();
 
                 Method method;
-                
+                System.out.println("\n"+interfaceClassImpl.getName() + " "+ interfaceClass.getName()+" "+interfaceClassImpl.isAssignableFrom(interfaceClass));
                 if(!interfaceClassImpl.isAssignableFrom(interfaceClass))
                 	throw new RMIException(  "Illegal ");
                 
@@ -372,7 +372,13 @@ public class Skeleton<T> {
                     	out.writeObject(result);
 //                } 
             } catch (Exception e) {
-                service_error(new RMIException(e));
+                try {
+                	out.writeObject("EXCEPTION");
+					out.writeObject(new RMIException(e));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             } finally {
                 try {
                     if (out != null) {
