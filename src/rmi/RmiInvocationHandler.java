@@ -65,7 +65,7 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 	        	inFromServer.close();
 	        	outToServer.close();
 	        	s.close();
-	        	throw (Exception) returned;
+	        	return (Exception) returned;
 	        }
 	        else{
 //	        	outToServer.close();
