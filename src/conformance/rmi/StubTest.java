@@ -120,7 +120,8 @@ public class StubTest extends Test {
 		} catch (RMIException e) {
 			return;
 		} catch (Throwable t) {
-			throw new TestFailed("exception when attempting to connect to " + "server", t);
+			
+			throw new TestFailed("exception when attempting to connect to " + "server " + t.getMessage() , t);
 		}
 
 		throw new TestFailed("stub sent no data");
