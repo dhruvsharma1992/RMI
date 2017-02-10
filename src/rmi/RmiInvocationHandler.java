@@ -52,17 +52,24 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 	        
 	        outToServer.writeObject(msg);
 	        Object returned = inFromServer.readObject();
-	        if(returned instanceof Exception){
-	        	s.close();
+	        
+	        if( returned == null ){
 	        	inFromServer.close();
 	        	outToServer.close();
+	        	s.close();
+	        	return returned;
+	        }
+	        if(returned instanceof Exception){
+	        	inFromServer.close();
+	        	outToServer.close();
+	        	s.close();
 	        	throw (Exception) returned;
 	        }
 	        else{
-	        	s.close();
 //	        	outToServer.close();
 	        	inFromServer.close();
 	        	outToServer.close();
+	        	s.close();
 	        	return returned; 
 	        	
 	        }
