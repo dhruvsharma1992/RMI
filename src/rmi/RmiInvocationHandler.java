@@ -59,10 +59,12 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 	        {
 	        	message = (String) inFromServer.readObject();
 	        	returned = inFromServer.readObject();
+
+//	        	System.out.println(message + " " + returned); 
 	        }catch(EOFException e){}
 //	        }
 	        if(message != null){
-	        	if(message.equals("RETURNED")){
+	        	if(message.equals("RETURN")){
 	        		inFromServer.close();
     	        	outToServer.close();
     	        	s.close();
