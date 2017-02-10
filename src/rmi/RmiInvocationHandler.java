@@ -9,9 +9,11 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Objects;
 import java.lang.IllegalStateException;
 
@@ -41,7 +43,7 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 	        if (method.equals(Object.class.getMethod("toString"))) {
                 return className.getCanonicalName() + " " + hostname + " " + port;
             }
-        	
+//        	new Socket(new InetSocketAddress(7000));
 	        s = new Socket(hostname, port);
 			ObjectOutputStream outToServer = new ObjectOutputStream(s.getOutputStream());
 			outToServer.flush();
@@ -66,7 +68,11 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
 	        }
 			
 		}catch(Exception e){
-			throw new RMIException(e.getMessage());
+			 if (Arrays.asList(method.getExceptionTypes()).contains(e.getClass())){
+                 throw e;
+             }
+             throw new RMIException(e);
+//			throw new RMIException(e.getMessage());
 		}
 	}
 	
