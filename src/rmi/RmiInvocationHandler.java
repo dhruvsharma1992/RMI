@@ -8,18 +8,19 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Objects;
 import java.lang.IllegalStateException;
 
-public class RmiInvocationHandler implements InvocationHandler{
+public class RmiInvocationHandler<T> implements InvocationHandler{
 
 //	InetSocketAddress address ;
-	Class<?> className;
-	String hostname;
-	int port;
+	public Class<T> className;
+	public String hostname;
+	public int port;
 	
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable{
@@ -30,13 +31,14 @@ public class RmiInvocationHandler implements InvocationHandler{
 			outToServer.flush();
 	        ObjectInputStream inFromServer = new ObjectInputStream(s.getInputStream());
 	        Message msg = new Message(method,args);
-	        if(method.getName().equals("equals")){
-	        	
-	        	System.out.println(args[0]);
-	        	if(args[0] == null)
-	        		return false;
-	        	return ( this.className.equals(args[0].getClass()));
-	        }
+	        if (method.equals(Object.class.getMethod("equals", Object.class))) {
+                if (args[0] instanceof Proxy) {
+                	RmiInvocationHandler handler = (RmiInvocationHandler) Proxy.getInvocationHandler((Proxy) args[0]);
+                    return (className.equals(handler.className) && hostname.equals(handler.hostname) && handler.port == port);
+                }
+                return false;
+                // alternately can match tostrings of both
+            }
 	        if(method.getName().equals("hashCode"))
 	        	return Objects.hashCode(proxy);
 	        
@@ -65,7 +67,7 @@ public class RmiInvocationHandler implements InvocationHandler{
 		}
 	}
 	
-	public RmiInvocationHandler(Class<?> c,String hostname, int port)  {
+	public RmiInvocationHandler(Class c,String hostname, int port)  {
 		this.className = c;
 		this.hostname = hostname;
 		this.port = port;
