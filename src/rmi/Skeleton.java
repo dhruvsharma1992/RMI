@@ -180,7 +180,13 @@ public class Skeleton<T> {
                 serverSocket = new ServerSocket(0);
                 address = new InetSocketAddress(localIp, serverSocket.getLocalPort());
 
-            } else if (serverSocket == null || serverSocket.isClosed()) {
+            } 
+            else if(address.getHostName() == null){
+                address = new InetSocketAddress("0.0.0.0", address.getPort());
+                serverSocket = new ServerSocket(address.getPort());
+            	
+            }
+            else if (serverSocket == null || serverSocket.isClosed()) {
                 serverSocket = new ServerSocket(address.getPort());
             }
 
