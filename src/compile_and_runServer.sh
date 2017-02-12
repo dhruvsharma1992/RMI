@@ -1,0 +1,4 @@
+make
+
+java pingpongserverTest/PingServerFactory
+
