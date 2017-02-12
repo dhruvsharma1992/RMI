@@ -45,12 +45,14 @@ public class Message implements Serializable{
 	Class<?>[] parameterTypes;
 	Class<?> returnType;
 	Object[] args;
+	Class<?> implementedClass;
 	
 	
-	public Message(Method method, Object[] args){
+	public Message(Class<?> className,Method method, Object[] args){
 		this.methodName = method.getName();
 		this.parameterTypes = method.getParameterTypes();
 		this.returnType = method.getReturnType();
 		this.args = args; 
+		this.implementedClass = className;
 	}
 }

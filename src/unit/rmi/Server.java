@@ -6,6 +6,7 @@ public interface Server  {
 	
 	Number triple(int x) throws RMIException;
 	int triple(Number x) throws RMIException;
+	void exception() throws RMIException;
 	
 
 }

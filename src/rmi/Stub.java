@@ -75,21 +75,21 @@ public abstract class Stub
                       <code>RMIException</code>, or if an object implementing
                       this interface cannot be dynamically created.
      */
-    public static <T> T create(Class<T> c, Skeleton<T> skeleton)    throws Throwable  {
+    public static <T> T create(Class<T> c, Skeleton<T> skeleton)    {
     	if(c==null || skeleton == null)
     		throw new NullPointerException();
     	
     	if(!c.isInterface())
     		throw new Error("Stubs cannot be created for classes");
     	
-    	if(skeleton.getHostName() == null || skeleton.getPort() == 0 || !skeleton.getRunningStatus())
+    	if(skeleton.getAddress() == null || skeleton.getAddress().getHostName() == null || skeleton.getAddress().getPort() == 0 )//|| !skeleton.getRunningStatus()
     		throw new IllegalStateException();
       	
     	if(!CheckRMIException(c))  		
             throw new Error("The Input Class does not represent a remote interface ");
     		
     	try{
-    		T stub = _create(c,skeleton.getHostName(),skeleton.getPort());
+    		T stub = _create(c,skeleton.getAddress().getHostName(),skeleton.getAddress().getPort());
     		return stub;
     	}catch(IllegalArgumentException e)
     	{
@@ -129,7 +129,7 @@ public abstract class Stub
                       this interface cannot be dynamically created.
      */
     public static <T> T create(Class<T> c, Skeleton<T> skeleton,
-                               String hostname) throws UnknownHostException
+                               String hostname) 
     {
     	if(c==null || skeleton == null || hostname == null)
     		throw new NullPointerException();
@@ -137,14 +137,14 @@ public abstract class Stub
     	if(!c.isInterface())
     		throw new Error("Stubs cannot be created for classes");
     	
-    	if(skeleton.getPort() == 0 || !skeleton.getRunningStatus())
+    	if(skeleton.getAddress() == null || skeleton.getAddress().getPort() == 0 )//|| !skeleton.getRunningStatus()
     		throw new IllegalStateException();
 
       	if(!CheckRMIException(c))  		
             throw new Error("The Input Class does not represent a remote interface ");
       	 
 		try{
-			T stub = _create(c, hostname, skeleton.getPort());
+			T stub = _create(c, hostname, skeleton.getAddress().getPort());
 			return stub;
 		}catch(IllegalArgumentException e)
     	{

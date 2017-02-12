@@ -20,21 +20,18 @@ public class Client {
 			Server stub2 = Stub.create(Server.class, new InetSocketAddress(80));
 			System.out.println(stub.triple(3).num);
 			System.out.println(stub.triple(new Number(5)));
-			System.out.println(stub.equals(null));
-			System.out.println(stub.hashCode());
-			System.out.println(stub2.hashCode());
-//			System.out.println(server.triple(3));
-//			System.out.println(server.triple(3));
-//			System.out.println(server.triple(3));
+			stub.exception();
 			skeleton.stop();
 			System.out.println("hi");
 		} catch (RMIException e) {
 			skeleton.stop();
 			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} catch (Throwable e) {
 			skeleton.stop();
 			// TODO Auto-generated catch block
+			System.out.println("Throwable exception");
 			e.printStackTrace();
 		}
 

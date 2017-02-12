@@ -3,21 +3,29 @@ package rmi;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Objects;
 import java.lang.IllegalStateException;
 
-public class RmiInvocationHandler<T> implements InvocationHandler{
+public class RmiInvocationHandler<T> implements InvocationHandler, Serializable{
 
-//	InetSocketAddress address ;
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7948319869802020963L;
+	//	InetSocketAddress address ;
 	public Class<T> className;
 	public String hostname;
 	public int port;
@@ -35,38 +43,58 @@ public class RmiInvocationHandler<T> implements InvocationHandler{
                 return false;
                 // alternately can match tostrings of both
             }
-	        if(method.getName().equals("hashCode"))
+	        if(method.equals(Object.class.getMethod("hashCode")))
 	        	return className.hashCode()*hostname.hashCode()*port;
 	        
 	        if (method.equals(Object.class.getMethod("toString"))) {
                 return className.getCanonicalName() + " " + hostname + " " + port;
             }
-        	
+//        	new Socket(new InetSocketAddress(7000));
 	        s = new Socket(hostname, port);
 			ObjectOutputStream outToServer = new ObjectOutputStream(s.getOutputStream());
 			outToServer.flush();
 	        ObjectInputStream inFromServer = new ObjectInputStream(s.getInputStream());
-	        Message msg = new Message(method,args);
+	        Message msg = new Message(className,method,args);
 	        
 	        outToServer.writeObject(msg);
-	        Object returned = inFromServer.readObject();
-	        if(returned instanceof Exception){
-	        	s.close();
-	        	inFromServer.close();
-	        	outToServer.close();
-	        	throw (Exception) returned;
-	        }
-	        else{
-	        	s.close();
-//	        	outToServer.close();
-	        	inFromServer.close();
-	        	outToServer.close();
-	        	return returned; 
+	        Object returned = null;
+	        
+	        String message = null;
+	        try
+	        {
+	        	message = (String) inFromServer.readObject();
+	        	returned = inFromServer.readObject();
+
+//	        	System.out.println(message + " " + returned); 
+	        }catch(EOFException e){}
+//	        }
+	        if(message != null){
+	        	if(message.equals("RETURN")){
+	        		inFromServer.close();
+    	        	outToServer.close();
+    	        	s.close();
+    	        	return returned;
+	        	}
+	        	else if(message.equals("EXCEPTION")){
+	    	        	inFromServer.close();
+	    	        	outToServer.close();
+	    	        	s.close();
+	    	        	throw (Exception) returned;
+	        	}
 	        	
 	        }
+	        
+	        return null;
+	        
 			
 		}catch(Exception e){
-			throw new RMIException(e.getMessage());
+			 if (Arrays.asList(method.getExceptionTypes()).contains(e.getClass())){
+//				 System.out.println("e");
+                 throw e;
+             }
+//			 System.out.println("rmi");
+             throw new RMIException(e);
+//			throw new RMIException(e.getMessage());
 		}
 	}
 	
