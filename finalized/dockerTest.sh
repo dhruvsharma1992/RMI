@@ -15,7 +15,7 @@ CLIENT_CONTAINER=client
 
 docker stop $CLIENT_CONTAINER $SERVER_CONTAINER
 docker rm $CLIENT_CONTAINER $SERVER_CONTAINER
-docker network rm pingnetwork
+#docker network rm pingnetwork
 # Set the local directories to the server and the client
 LOCAL_DIR=$(pwd)
 
@@ -24,50 +24,7 @@ WORK_DIR='/root/RMI'
 
 # Set the idNumber and the output file name
 ID_NUM=100
-OUTPUT_FILE=clientOutput
-#########################################################################
-# Create Docker machine (if neccesary)
-#########################################################################
-
-echo "-----------------------------------------------------------"
-echo "List of existing Docker machines"
-echo "-----------------------------------------------------------"
-docker-machine ls
-echo "-----------------------------------------------------------"
-
-# Machine exists and is Running
-if (docker-machine ls | grep "^$DOCKER_MACHINE_NAME .* Running"); then
-    echo "-----------------------------------------------------------"
-    echo "Machine exists and is already running"
-    echo "Moving over to next step ..."
-    echo "-----------------------------------------------------------"
-else
-
-    # Machine doesnt exist
-    if !(docker-machine ls | grep "^$DOCKER_MACHINE_NAME "); then
-        echo "-----------------------------------------------------------"
-        echo "Creating Docker machine: $DOCKER_MACHINE_NAME"
-        echo "-----------------------------------------------------------"
-        docker-machine create --driver=virtualbox $DOCKER_MACHINE_NAME
-    fi
-
-    # Machine exists but Stopped
-    if (docker-machine ls | grep "^$DOCKER_MACHINE_NAME .* Stopped"); then
-        echo "-----------------------------------------------------------"
-        echo "Starting Docker machine ... $DOCKER_MACHINE_NAME"
-        echo "-----------------------------------------------------------"
-        docker-machine start $DOCKER_MACHINE_NAME
-    fi
-fi
-
-#########################################################################
-# Build images:
-#########################################################################
-echo "-----------------------------------------------------------"
-echo "Building images"
-echo "-----------------------------------------------------------"
-eval $(docker-machine env $DOCKER_MACHINE_NAME) 
-# Build the client and server ubuntu Images
+#OUTPUT_FILE=clientOutput
 docker build -t $IMAGE $LOCAL_DIR
 
 #########################################################################
@@ -87,6 +44,9 @@ SERVER_IP=($(docker exec $SERVER_CONTAINER hostname -I))
 docker run -itd --name $CLIENT_CONTAINER --net=pingnetwork $IMAGE bash $WORK_DIR/compile_and_runClient.sh $SERVER_IP $ID_NUM
 sleep 10
 docker logs $CLIENT_CONTAINER
+docker stop $SERVER_CONTAINER
+docker stop $CLIENT_CONTAINER
+docker network rm pingnetwork
 #docker logs $CLIENT_CONTAINER > $OUTPUT_FILE
 #docker stop $CLIENT_CONTAINER $SERVER_CONTAINER
 #docker rm $CLIENT_CONTAINER $SERVER_CONTAINER
