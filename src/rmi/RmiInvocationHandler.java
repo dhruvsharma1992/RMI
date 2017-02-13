@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.lang.IllegalStateException;
 
-public class RmiInvocationHandler<T> implements InvocationHandler, Serializable{
+class RmiInvocationHandler<T> implements InvocationHandler, Serializable{
 
 /**
 	 * 

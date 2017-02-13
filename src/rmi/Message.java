@@ -4,7 +4,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-public class Message implements Serializable{	
+class Message implements Serializable{	
 	
 
 	public String getMethodName() {
