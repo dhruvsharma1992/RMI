@@ -78,12 +78,13 @@ echo "Start running of 2 containers"
 echo "-----------------------------------------------------------"
 
 docker network create -d bridge pingnetwork
-docker run -itd --name $SERVER_CONTAINER -v $LOCAL_DIR:$WORK_DIR --net=pingnetwork $IMAGE bash $WORK_DIR/compile_and_runServer.sh
-
-SERVER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $SERVER_CONTAINER)
+#docker run -itd --name $SERVER_CONTAINER -v $LOCAL_DIR:$WORK_DIR --net=pingnetwork $IMAGE bash $WORK_DIR/compile_and_runServer.sh
+docker run -itd --name $SERVER_CONTAINER --net=pingnetwork $IMAGE bash $WORK_DIR/compile_and_runServer.sh
+#SERVER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $SERVER_CONTAINER)
 SERVER_IP=($(docker exec $SERVER_CONTAINER hostname -I))
-docker run -itd --name $CLIENT_CONTAINER -v $LOCAL_DIR:$WORK_DIR --net=pingnetwork $IMAGE bash $WORK_DIR/compile_and_runClient.sh $SERVER_IP $ID_NUM
+#docker run -itd --name $CLIENT_CONTAINER -v $LOCAL_DIR:$WORK_DIR --net=pingnetwork $IMAGE bash $WORK_DIR/compile_and_runClient.sh $SERVER_IP $ID_NUM
 
+docker run -itd --name $CLIENT_CONTAINER --net=pingnetwork $IMAGE bash $WORK_DIR/compile_and_runClient.sh $SERVER_IP $ID_NUM
 sleep 10
 docker logs $CLIENT_CONTAINER
 #docker logs $CLIENT_CONTAINER > $OUTPUT_FILE
