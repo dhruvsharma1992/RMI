@@ -33,21 +33,29 @@ public class PingPongClient
                 System.out.println(t.toString());
                 return;
             }
-
-        for (int i = 0; i < 4; i++){
+    	
+        int correct = 0;
+        int failed = 0;
+        int total = 4;
+        for (int i = 0; i < total; i++){
             try
                 {
                     System.out.println(stub.ping(Integer.parseInt(args[1])));
+                    correct += 1;
                 }
             catch(RMIException e)
                 {
                     System.out.println(e.toString());
+                    failed += 1;
                 }
             catch(Throwable t)
                 {
                     System.out.println(t.toString());
+                    failed += 1;
                 }
         }
+        
+        System.out.println(total + " Tests Completed, " + correct + " passed, " + failed + " failed");
 
 
     }
